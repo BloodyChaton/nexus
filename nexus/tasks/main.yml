@@ -1,63 +1,56 @@
 ---
-- hosts: nexus
-  become: true
-  tasks:
-
-    - name : Download Java 1.8 
-      yum:
-        name: java-1.8.0-openjdk-devel,git
-        state: present
+- name : Download Java 1.8 
+  yum:
+    name: java-1.8.0-openjdk-devel,git
+    state: present
 
 # tasks file for ansible-nexus
-    - name: Download nexus_package 
-      get_url: url=https://sonatype-download.global.ssl.fastly.net/nexus/3/nexus-3.0.2-02-unix.tar.gz dest=/usr/bin
-      tags: download
+- name: Download nexus_package 
+  get_url: url=https://sonatype-download.global.ssl.fastly.net/nexus/3/nexus-3.0.2-02-unix.tar.gz dest=/usr/bin
 
+- name: Ensure Nexus o/s group exists
+  group:
+    name: "nexus"
+    state: present
 
-    - name: Ensure Nexus o/s group exists
-      group:
-        name: "nexus"
-        state: present
-
-    - name: Ensure Nexus o/s user exists
-      user:
-        name: "nexus"
-        group: "nexus"
-        shell: "/bin/bash"
-        state: present
+- name: Ensure Nexus o/s user exists
+  user:
+    name: "nexus"
+    group: "nexus"
+    shell: "/sbin/nologin"
+    state: present
 
 # unpack nexus
-    - name: Unpack Nexus download
-      unarchive:
-          src="/usr/bin/nexus-3.0.2-02-unix.tar.gz"
-          dest="/usr/bin"
-          force=no
-          copy=false
-          owner="nexus"
-          group="nexus"
-          mode="0755"
-      tags: unpack
+- name: Unpack Nexus download
+  unarchive:
+    src: "/usr/bin/nexus-3.0.2-02-unix.tar.gz"
+    dest: "/usr/bin"
+    force: no
+    copy: false
+    owner: "nexus"
+    group: "nexus"
+    mode: "0755"
 
 # permissions
-    - name: Set permissions and ownership on Nexus installation directory
-      file:
-          path=/usr/bin/nexus-3.0.2-02
-          state="directory"
-          owner="nexus"
-          group="nexus"
-          mode="0755"
-          recurse=true
+- name: Set permissions and ownership on Nexus installation directory
+  file:
+    path: /usr/bin/nexus-3.0.2-02
+    state: "directory"
+    owner: "nexus"
+    group: "nexus"
+    mode: "0755"
+    recurse: true
 
 # copier nexus.rc
-    - name: Copy nexus.rc
-      copy: 
-        src: templates/nexus.rc
-        dest: /usr/bin/nexus-3.0.2-02/bin/nexus.rc
-        owner: nexus
-        group: nexus
-        mode: u=rw,g=r,o=r
+- name: Copy nexus.rc
+  copy: 
+    src: templates/nexus.rc
+    dest: /usr/bin/nexus-3.0.2-02/bin/nexus.rc
+    owner: nexus
+    group: nexus
+    mode: u=rw,g=r,o=r
 
 # demarrer le service
-    - name: démarrage du servive nexus
-      command: /usr/bin/nexus-3.0.2-02/bin/nexus start
-      sudo: yes
+- name: démarrage du servive nexus
+  command: /usr/bin/nexus-3.0.2-02/bin/nexus start
+  sudo: yes
