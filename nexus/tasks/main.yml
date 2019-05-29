@@ -17,7 +17,7 @@
   user:
     name: "nexus"
     group: "nexus"
-    shell: "/sbin/nologin"
+    shell: "/bin/bash"
     state: present
 
 # unpack nexus
