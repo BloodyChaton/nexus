@@ -44,7 +44,7 @@
 # copier nexus.rc
 - name: Copy nexus.rc
   copy: 
-    src: templates/nexus.rc
+    src: ../templates/nexus.rc
     dest: /usr/bin/nexus-3.0.2-02/bin/nexus.rc
     owner: nexus
     group: nexus
